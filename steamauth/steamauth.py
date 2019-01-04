@@ -6,15 +6,15 @@ except ImportError:
     from urllib import urlencode
 import re, requests
 
-
-ABSOLUTE_URL = getattr(settings, 'ABSOLUTE_URL', 'localhost')
+ABSOLUTE_URL = getattr(settings, 'ABSOLUTE_URL', 'localhost:8000')
 STEAM_LOGIN_URL = 'https://steamcommunity.com/openid/login'
 
-def auth(response_url, use_ssl):
-    protocol_re = re.search('(?:http)', response_url)
-    if protocol_re == None or protocol_re.group(0) == None:
-        protocol = "https" if use_ssl else "https"
-        response_url = "{0}://{1}{2}".format(protocol, ABSOLUTE_URL, response_url)
+
+def auth(response_url, use_ssl=None, scheme='https'):
+    if 'http' not in response_url:
+        if use_ssl is not None:
+            scheme = 'https' if use_ssl else 'http'
+        response_url = "{0}://{1}{2}".format(scheme, ABSOLUTE_URL, response_url)
 
     params = {
         "openid.ns": "http://specs.openid.net/auth/2.0",
