@@ -36,7 +36,7 @@ def get_uid(results):
 
     for s_arg in results['openid.signed'].split(','):
         arg = 'openid.{0}'.format(s_arg)
-        if results[arg] not in args:
+        if arg not in args:
             args[arg] = results[arg]
 
     args['openid.mode'] = 'check_authentication'
@@ -44,7 +44,7 @@ def get_uid(results):
     request = requests.post(STEAM_LOGIN_URL, args)
     request.connection.close()
 
-    if re.search('is_valid:true', request.text):
-        uid_re = re.search('https://steamcommunity.com/openid/id/(\d+)', results['openid.claimed_id'][0])
+    if 'is_valid:true' in request.text:
+        uid_re = re.search('/id/(\d+)', results['openid.claimed_id'][0])
         if uid_re and uid_re.lastindex > 0:
             return uid_re.group(1)
