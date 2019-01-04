@@ -10,7 +10,7 @@ ABSOLUTE_URL = getattr(settings, 'ABSOLUTE_URL', '127.0.0.1:8000')
 STEAM_LOGIN_URL = 'https://steamcommunity.com/openid/login'
 
 
-def auth(response_url, use_ssl=None, scheme='https', host=None):
+def get_steam_login_url(response_url, host=None, scheme='https'):
     if 'http' not in response_url:
         host = host or ABSOLUTE_URL
         if use_ssl is not None:
@@ -26,11 +26,7 @@ def auth(response_url, use_ssl=None, scheme='https', host=None):
         "openid.claimed_id": "http://specs.openid.net/auth/2.0/identifier_select"
     }
 
-    response = HttpResponse()
-    response['Location'] = "{0}?{1}".format(STEAM_LOGIN_URL, urlencode(params))
-    response['Content-Type'] = 'application/x-www-form-urlencoded'
-    response.status_code = 302
-    return response
+    return "{0}?{1}".format(STEAM_LOGIN_URL, urlencode(params))
 
 
 def get_uid(results):
