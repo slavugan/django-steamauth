@@ -13,8 +13,6 @@ STEAM_LOGIN_URL = 'https://steamcommunity.com/openid/login'
 def get_steam_login_url(response_url, host=None, scheme='https'):
     if 'http' not in response_url:
         host = host or ABSOLUTE_URL
-        if use_ssl is not None:
-            scheme = 'https' if use_ssl else 'http'
         response_url = "{0}://{1}{2}".format(scheme, host, response_url)
 
     params = {
