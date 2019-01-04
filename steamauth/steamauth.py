@@ -1,4 +1,3 @@
-from django.http import HttpResponse
 from django.conf import settings
 try:
     from urllib.parse import urlencode
@@ -28,21 +27,17 @@ def get_steam_login_url(response_url, host=None, scheme='https'):
 
 
 def get_uid(results):
-    results = dict(results)
-
     args = {
-        'openid.assoc_handle': results['openid.assoc_handle'][0],
-        'openid.signed': results['openid.signed'][0],
-        'openid.sig': results['openid.sig'][0],
-        'openid.ns': results['openid.ns'][0]
+        'openid.assoc_handle': results['openid.assoc_handle'],
+        'openid.signed': results['openid.signed'],
+        'openid.sig': results['openid.sig'],
+        'openid.ns': results['openid.ns']
     }
 
-    s_args = results['openid.signed'][0].split(',')
-
-    for arg in s_args:
-        arg = 'openid.{0}'.format(item)
-        if results[arg][0] not in args:
-            args[arg] = results[arg][0]
+    for s_arg in results['openid.signed'].split(','):
+        arg = 'openid.{0}'.format(s_arg)
+        if results[arg] not in args:
+            args[arg] = results[arg]
 
     args['openid.mode'] = 'check_authentication'
 
@@ -51,19 +46,5 @@ def get_uid(results):
 
     if re.search('is_valid:true', request.text):
         uid_re = re.search('https://steamcommunity.com/openid/id/(\d+)', results['openid.claimed_id'][0])
-        if uid_re or uid_re.group(1) != None:
+        if uid_re and uid_re.lastindex > 0:
             return uid_re.group(1)
-        else:
-            return False
-    else:
-        return False
-
-def RedirectToSteamSignIn(response_url, use_ssl):
-    import sys
-    print >> sys.stdout, "Warning! `RedirectToSteamSignIn` and `GetSteamID64` methods are DEPRECATED. Please use `auth` and `get_uid` instead."
-    return auth(response_url, use_ssl)
-
-def GetSteamID64(results):
-    import sys
-    print >> sys.stdout, "Warning! `RedirectToSteamSignIn` and `GetSteamID64` methods are DEPRECATED. Please use `auth` and `get_uid` instead."
-    return get_uid(results)
