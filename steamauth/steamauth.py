@@ -44,7 +44,7 @@ def get_uid(results):
     request = requests.post(STEAM_LOGIN_URL, args)
     request.connection.close()
 
-    if 'is_valid:true' in request.text:
-        uid_re = re.search('/id/(\d+)', results['openid.claimed_id'][0])
+    if re.search('is_valid:true', request.text):
+        uid_re = re.search('https://steamcommunity.com/openid/id/(\d+)', results['openid.claimed_id'])
         if uid_re and uid_re.lastindex > 0:
             return uid_re.group(1)
